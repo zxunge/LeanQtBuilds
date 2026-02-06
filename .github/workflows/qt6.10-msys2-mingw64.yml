@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 env:
   QT_VERSION: 6.10.2
-  QT_VERION_RED: '6.10'
+  QT_VERION_RED: 6.10
 
 jobs:
   build:
