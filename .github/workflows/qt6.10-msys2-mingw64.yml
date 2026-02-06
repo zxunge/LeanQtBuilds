@@ -1,0 +1,47 @@
+name: Qt 6.10 for MSYS2 MINGW64
+
+on: workflow_dispatch
+
+env:
+  QT_VERSION: 6.10.2
+  QT_VERION_RED: '6.10'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Setup MSYS2 Environment
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ matrix.msystem }}
+        update: true
+        location: D:\
+        install: >-
+          unzip
+          p7zip
+          base-devel
+        pacboy: >-
+          toolchain:p
+          cmake:p
+          ninja:p
+          python:p
+
+    - name: Build Qt
+      shell: msys2 {0}
+      run: |
+        curl -L -o qt-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION_RED}}/${{env.QT_VERSION}}/single/qt-everywhere-src-${{env.QT_VERSION}}.zip
+        unzip -q qt-everywhere-src.zip -d ./${{env.QT_VERSION}}
+        mkdir -p qt-install
+        cd ./${{env.QT_VERSION}}
+
+        # Start to build
+        mkdir -p qt-build && cd $_
+        ../configure -ltcg -opensource -confirm-license -nomake examples -nomake tests -skip qtwebengine -gc-binaries -release -prefix ../../qt-install -system-zlib -system-libjpeg -system-libpng -system-freetype -system-pcre -system-harfbuzz -no-icu
+        cmake --build . --parallel
+        cmake --install .
+
+    - name: Package binaries
+      shell: msys2 {0}
+      run: |
+        7z a Qt_${{env.QT_VERSION}}.7z qt-install/* -mx=9
