@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 env:
   QT_VERSION: 6.10.2
-  QT_VERSION_RED: 6.10
+  QT_VERSION_RED: '6.10'
 
 jobs:
   build:
@@ -45,4 +45,5 @@ jobs:
       shell: msys2 {0}
       run: |
         7z a Qt_${{env.QT_VERSION}}.7z qt-install/* -mx=9
+
 
